@@ -12,6 +12,14 @@ use Illuminate\Http\Request;
 class OrderController extends Controller
 {
     function makeNewOrder(Request $request){ 
+
+
+
+    	//update table status = 1
+        // Table::find($request->order_table)->update(['table_status'=>1]);
+        Table::where('table_id',$request->order_table)->update(['table_status'=>1]);
+
+
 		// phải lấy dc giá trị ID của table khi chọn bàn ( trong swift ), s
 		// sau đó truyền vào Request
 		// var_dump($request->drink_name);
@@ -22,7 +30,9 @@ class OrderController extends Controller
         $order->order_date = $request->order_date;
         $order->order_table = $request->order_table;
         $order->order_status = $request ->order_status;
-
+        
+        
+        
         $order->save();
 
         return $order->order_id;
@@ -32,8 +42,8 @@ class OrderController extends Controller
 	function addDrinkToOrder(Request $request){
 
 		//kiem tra co order_id kem theo
-		if($request->od_order != null){
-			$orderID = $request->od_order;
+		if($request->order_id != null){
+			$orderID = $request->order_id;
 		}else{
 			//khong co order id kem theo
 			$orderID = $this->makeNewOrder($request);
@@ -69,7 +79,7 @@ class OrderController extends Controller
 		return ["success"=>$success,
 				"message"=>$error,
 				"data"=>$data,
-				"orderid"=>$orderID
+				"order_id"=>$orderID
 		];
 	}
 
@@ -101,8 +111,8 @@ class OrderController extends Controller
 	function updateOrderAndTableStatus($tableid){
 
 		Order::where('order_table',$tableid)->where('order_status',1)->update(['order_status'=>0]);
-		Table::find(1)->update(['table_status'=>0]);
-
+		// Table::find(1)->update(['table_status'=>0]); ko xai dc
+		Table::where('table_id',$tableid)->update(['table_status'=>0]);
 	}
 
 }
